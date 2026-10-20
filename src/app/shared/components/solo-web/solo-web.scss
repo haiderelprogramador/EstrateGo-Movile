@@ -1,0 +1,36 @@
+:host {
+  display: block;
+}
+
+.solo-web {
+  display: flex;
+  gap: 0.8rem;
+  align-items: flex-start;
+  padding: 0.9rem 1rem;
+  border: 1px dashed var(--bs-border-strong);
+  border-radius: var(--bs-radius-sm, 10px);
+  background: var(--bs-surface-2);
+
+  &__icon {
+    display: grid;
+    place-items: center;
+    width: 2.2rem;
+    height: 2.2rem;
+    flex: none;
+    border-radius: 9px;
+    background: var(--bs-primary-soft);
+    color: var(--bs-primary-strong);
+    font-size: 1.1rem;
+  }
+  &__texto {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    font-size: 0.82rem;
+    color: var(--bs-muted);
+    strong {
+      color: var(--bs-foreground);
+      font-size: 0.88rem;
+    }
+  }
+}

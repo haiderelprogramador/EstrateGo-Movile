@@ -273,3 +273,44 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ---- Móvil (🎨 docs/09): pestañas deslizables, cabecera apilada ----------- */
+@media (max-width: 720px) {
+  .panel__head {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+  .panel__tabs {
+    gap: 0.25rem;
+    margin: 0 -1rem;
+    padding: 0 1rem;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    button {
+      flex: none;
+      padding: 0.6rem 0.75rem;
+      white-space: nowrap;
+      border-radius: 999px 999px 0 0;
+    }
+  }
+}
+
+/* Pasos de configuración inicial: en móvil el enlace baja a su propia línea. */
+@media (max-width: 720px) {
+  .paso {
+    flex-wrap: wrap;
+    gap: 0.5rem 0.75rem;
+  }
+  .paso__enlace {
+    flex-basis: 100%;
+    margin-left: 2.35rem;
+    white-space: normal;
+    text-align: left;
+  }
+  .periodos__stats {
+    grid-template-columns: 1fr 1fr;
+  }
+}

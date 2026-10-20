@@ -15,8 +15,8 @@
   </div>
 
   <div class="reportes__grid">
-    <div class="card grafico">
-      <header class="grafico__head">
+    <div class="card grafico seccion" [class.is-cerrada]="!abierta('grafico')">
+      <header class="grafico__head seccion__head">
         <div>
           <h2 class="t-title">Ingresos vs. costos</h2>
           <p class="grafico__sub">Últimos 4 trimestres (miles USD)</p>
@@ -25,9 +25,13 @@
           <span><i class="dot dot--ing"></i>Ingresos</span>
           <span><i class="dot dot--cost"></i>Costos</span>
         </div>
+        <button type="button" class="seccion__toggle solo-movil" (click)="alternar('grafico')"
+          [attr.aria-expanded]="abierta('grafico')" aria-label="Mostrar u ocultar gráfico">
+          <span class="seccion__chevron" aria-hidden="true"></span>
+        </button>
       </header>
 
-      <div class="grafico__plot">
+      <div class="grafico__plot seccion__cuerpo">
         @for (p of serie(); track p.etiqueta) {
           <div class="grafico__col">
             <div class="grafico__bars">
@@ -42,12 +46,18 @@
       </div>
     </div>
 
-    <div class="card estado">
-      <header class="estado__head">
-        <h2 class="t-title">Estado de resultados</h2>
-        <p class="estado__sub">Trimestre 3 · 2026</p>
+    <div class="card estado seccion" [class.is-cerrada]="!abierta('estado')">
+      <header class="estado__head seccion__head">
+        <div>
+          <h2 class="t-title">Estado de resultados</h2>
+          <p class="estado__sub">Trimestre 3 · 2026</p>
+        </div>
+        <button type="button" class="seccion__toggle solo-movil" (click)="alternar('estado')"
+          [attr.aria-expanded]="abierta('estado')" aria-label="Mostrar u ocultar estado de resultados">
+          <span class="seccion__chevron" aria-hidden="true"></span>
+        </button>
       </header>
-      <dl class="estado__list">
+      <dl class="estado__list seccion__cuerpo">
         @for (linea of resultado; track linea.concepto) {
           <div class="estado__row" [class.estado__row--total]="linea.total">
             <dt>{{ linea.concepto }}</dt>

@@ -95,27 +95,41 @@
     max-width: 24rem;
   }
 
+  /* Control segmentado (estilo app): pista gris redondeada y la opcion
+     activa como "pildora" blanca elevada. */
   &__tabs {
-    display: flex;
-    gap: 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.25rem;
+    padding: 0.3rem;
     margin-bottom: 1.5rem;
-    border-bottom: 1px solid var(--bs-border);
+    border-radius: 999px;
+    background: #e8ecf2;
 
     a {
-      padding: 0.6rem 0.15rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 2.5rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 999px;
       font-size: 0.9rem;
       font-weight: 600;
       color: var(--bs-muted);
       text-decoration: none;
-      border-bottom: 2px solid transparent;
-      margin-bottom: -1px;
+      transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
 
       &.is-active {
-        color: var(--bs-primary);
-        border-bottom-color: var(--bs-primary);
+        background: #fff;
+        color: var(--bs-primary-strong);
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.14), 0 1px 2px rgba(15, 23, 42, 0.06);
       }
       &:hover:not(.is-active) {
         color: var(--bs-foreground);
+      }
+      &:focus-visible {
+        outline: 2px solid var(--bs-primary);
+        outline-offset: 2px;
       }
     }
   }
@@ -132,3 +146,42 @@
     font-size: 1.8rem;
   }
 }
+
+/* Mobile (app instalada / celular): el hero de marketing se reduce a un
+   encabezado compacto. En una pantalla de 5-6" nadie necesita leer el
+   titular y las estadisticas antes de poder iniciar sesion o registrarse;
+   el formulario debe ser lo primero visible sin hacer scroll. */
+@media (max-width: 560px) {
+  .auth__promo {
+    justify-content: flex-start;
+    gap: 0.3rem;
+    padding: 1rem 1.1rem;
+  }
+  .auth__copy {
+    max-width: none;
+  }
+  .auth__headline,
+  .auth__sub,
+  .auth__stats,
+  .auth__foot {
+    display: none;
+  }
+  .auth__eyebrow {
+    margin: 0;
+  }
+  .auth__panel {
+    padding: 1.25rem 1.1rem 2rem;
+  }
+  .auth__panel-inner {
+    max-width: none;
+  }
+  .auth__tabs {
+    margin-bottom: 1.25rem;
+
+    a {
+      min-height: 2.75rem;
+      font-size: 0.95rem;
+    }
+  }
+}
+

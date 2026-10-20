@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 
 import { Badge } from '../../../shared/components/badge/badge';
 import { Toggle } from '../../../shared/components/toggle/toggle';
+import { SoloWeb } from '../../../shared/components/solo-web/solo-web';
 import { Casos } from '../casos/casos';
 
 type TabPanel = 'periodos' | 'equipos' | 'casos' | 'parametros';
@@ -38,7 +39,7 @@ interface PasoConfig {
  */
 @Component({
   selector: 'app-panel',
-  imports: [RouterLink, Badge, Toggle, Casos],
+  imports: [RouterLink, Badge, Toggle, Casos, SoloWeb],
   templateUrl: './panel.html',
   styleUrl: './panel.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -75,10 +76,10 @@ export class Panel {
       },
       {
         n: 2,
-        titulo: 'Formar equipos',
-        descripcion: 'Agrupa a los estudiantes cargados en equipos',
-        enlaceTexto: 'Ir a Equipos y estudiantes',
-        tab: 'equipos',
+        titulo: 'Armar empresas',
+        descripcion: 'Crea las empresas de la simulación y asigna sus integrantes',
+        enlaceTexto: 'Ir a Empresas',
+        ruta: '/docente/empresas',
         completado: p2,
         bloqueado: false,
       },

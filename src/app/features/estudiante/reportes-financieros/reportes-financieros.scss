@@ -172,3 +172,72 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ---- Móvil (🎨 docs/09 §5): KPIs 2x2, secciones plegables, gráfico compacto --- */
+.seccion__toggle {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  flex: none;
+  margin-left: auto;
+  border: 1px solid var(--bs-border);
+  border-radius: 8px;
+  background: var(--bs-surface);
+  cursor: pointer;
+}
+.seccion__chevron {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-right: 2px solid var(--bs-muted);
+  border-bottom: 2px solid var(--bs-muted);
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform 0.18s ease;
+}
+.seccion.is-cerrada .seccion__chevron {
+  transform: translateY(2px) rotate(-135deg);
+}
+
+@media (max-width: 720px) {
+  .reportes__kpis {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.7rem;
+  }
+  .reportes__head {
+    gap: 0.6rem;
+  }
+
+  .grafico,
+  .estado {
+    padding: 1rem;
+  }
+  .grafico__head,
+  .estado__head {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+  .grafico__legend {
+    flex-basis: 100%;
+    order: 3;
+  }
+  .grafico__plot {
+    height: 150px;
+    gap: 0.5rem;
+  }
+  .grafico__bar {
+    width: 0.9rem;
+  }
+
+  .seccion.is-cerrada {
+    .seccion__head {
+      margin-bottom: 0;
+    }
+    .seccion__cuerpo,
+    .grafico__legend {
+      display: none;
+    }
+  }
+}

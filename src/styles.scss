@@ -205,44 +205,6 @@ body {
   }
 }
 
-/* 🎨 Barra de vista previa de fase (Caso actual) — misma idea que .preview-bar,
-   pero como pill clara (no es parte del diseño). */
-.fase-preview {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin: -1.75rem -1.75rem 1.25rem;
-  padding: 0.6rem 1.75rem;
-  background: var(--bs-surface);
-  border-bottom: 1px solid var(--bs-border);
-  font-size: 0.78rem;
-
-  &__label {
-    color: var(--bs-muted);
-    font-weight: 600;
-  }
-  &__opts {
-    display: flex;
-    gap: 0.4rem;
-  }
-  &__opts button {
-    padding: 0.3rem 0.7rem;
-    border: 1px solid var(--bs-border-strong);
-    border-radius: 999px;
-    background: #fff;
-    font: inherit;
-    font-weight: 600;
-    cursor: pointer;
-    color: var(--bs-muted);
-
-    &.is-active {
-      background: var(--bs-primary);
-      border-color: var(--bs-primary);
-      color: #fff;
-    }
-  }
-}
-
 /* Sub-tabs internos de una pantalla (Casos: Info General/Financiera/Opciones;
    Equipos y estudiantes: Estudiantes/Equipos). */
 .subtabs {
@@ -291,24 +253,6 @@ body {
     font-size: 0.85rem;
     color: var(--bs-muted);
   }
-  &__google {
-    gap: 0.6rem;
-  }
-  &__divider {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-size: 0.72rem;
-    color: var(--bs-muted);
-
-    &::before,
-    &::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--bs-border);
-    }
-  }
 }
 
 .link-btn {
@@ -337,6 +281,12 @@ body {
   &__label {
     font-size: 0.8rem;
     font-weight: 600;
+    color: var(--bs-muted);
+  }
+
+  &__hint {
+    margin: 0;
+    font-size: 0.78rem;
     color: var(--bs-muted);
   }
 
@@ -479,5 +429,63 @@ body {
 
   &--block {
     width: 100%;
+  }
+}
+
+
+/* Mobile: targets tactiles mas comodos en inputs y botones (min. ~44px) */
+@media (max-width: 560px) {
+  .field input,
+  .field select,
+  .field textarea {
+    padding: 0.75rem 0.85rem;
+  }
+
+  .btn {
+    padding: 0.75rem 1.1rem;
+  }
+}
+
+/* ---- Utilidades responsive (🎨 docs/09) ------------------------------------
+   .solo-movil     -> solo se ve en celular (<= 720px)
+   .solo-escritorio-> solo se ve en tablet/escritorio (> 720px)
+   .tabla-scroll   -> en móvil, scroll horizontal con la primera columna fija */
+@media (max-width: 720px) {
+  .solo-escritorio {
+    display: none !important;
+  }
+  .tabla-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -0.25rem;
+    padding: 0 0.25rem;
+
+    table {
+      min-width: 36rem;
+    }
+    th:first-child,
+    td:first-child {
+      position: sticky;
+      left: 0;
+      z-index: 1;
+      background: var(--bs-surface);
+      box-shadow: 1px 0 0 var(--bs-border);
+    }
+  }
+}
+@media (min-width: 721px) {
+  .solo-movil {
+    display: none !important;
+  }
+}
+
+/* Las barras de vista previa (ayuda de desarrollo) "sangran" hasta el borde del
+   contenido; en móvil el padding del contenido es 1rem, no 1.75rem. */
+@media (max-width: 720px) {
+  .preview-bar,
+  .fase-preview {
+    margin: -1rem -1rem 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 }

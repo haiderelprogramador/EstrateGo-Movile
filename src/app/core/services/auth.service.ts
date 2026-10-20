@@ -8,6 +8,7 @@ import { DemoDb } from '../demo/demo-db';
 import { Rol } from '../models/rol.enum';
 import {
   AuthResponse,
+  CambiarContrasenaRequest,
   LoginRequest,
   RegistroDocenteRequest,
   Usuario,
@@ -16,10 +17,11 @@ import {
 /**
  * Autenticación y sesión de la app.
  *
- * Contrato de API (Spring Boot, aún no implementado):
- *  - POST {@link API_CONFIG.endpoints.login}          body LoginRequest            -> AuthResponse
- *  - POST {@link API_CONFIG.endpoints.registroDocente} body RegistroDocenteRequest -> AuthResponse
- *  - GET  {@link API_CONFIG.endpoints.sesion}          (Bearer token)              -> { usuario: Usuario }
+ * Contrato de API (API Estratego, 57 endpoints, 5-oct-2026):
+ *  - POST {@link API_CONFIG.endpoints.login}             body LoginRequest              -> AuthResponse
+ *  - POST {@link API_CONFIG.endpoints.registroDocente}   body RegistroDocenteRequest    -> AuthResponse
+ *  - GET  {@link API_CONFIG.endpoints.sesion}            (Bearer token)                 -> { usuario: Usuario }
+ *  - POST {@link API_CONFIG.endpoints.cambiarContrasena} body CambiarContrasenaRequest  -> { message }
  *
  * Mientras `API_CONFIG.demoMode` sea true, cada método resuelve contra
  * {@link DemoDb} (localStorage) simulando latencia de red. La firma pública
@@ -109,6 +111,62 @@ export class AuthService {
   // ---------------------------------------------------------------------------
   // Sesión
   // ---------------------------------------------------------------------------
+
+  /**
+   * Valida el token actual contra el backend y refresca el `Usuario` en
+   * memoria (rehidratar la sesión al recargar la página). 401 si el token no
+   * es válido — el llamador decide si hace `logout()` con eso.
+   */
+  sesion(): Observable<{ usuario: Usuario }> {
+    if (!API_CONFIG.demoMode) {
+      return this.http.get<{ usuario: Usuario }>(apiUrl(API_CONFIG.endpoints.sesion)).pipe(
+        tap((res) => {
+          const actual = this._sesion();
+          if (actual) {
+            this.establecerSesion({ ...actual, usuario: res.usuario });
+          }
+        }),
+      );
+    }
+
+    // --- Implementación DEMO ---------------------------------------------------
+    const actual = this._sesion();
+    if (!actual) {
+      return throwError(() => ({ status: 401, message: 'No hay sesión activa.' })).pipe(
+        delay(API_CONFIG.demoLatenciaMs),
+      );
+    }
+    return of({ usuario: actual.usuario }).pipe(delay(API_CONFIG.demoLatenciaMs));
+  }
+
+  /**
+   * Cambia la contraseña del usuario con sesión (docente o estudiante). La
+   * sesión sigue igual: no devuelve token nuevo. 400 si la nueva no cumple las
+   * reglas (ver `contrasenaSegura()`) o es igual a la actual; 401 si la actual
+   * es incorrecta. Ese 401 es un error de formulario, NO de sesión: si algún
+   * día se agrega un "logout ante 401", tiene que exceptuar esta ruta.
+   */
+  cambiarContrasena(req: CambiarContrasenaRequest): Observable<{ message: string }> {
+    if (!API_CONFIG.demoMode) {
+      return this.http.post<{ message: string }>(apiUrl(API_CONFIG.endpoints.cambiarContrasena), req);
+    }
+
+    // --- Implementación DEMO ---------------------------------------------------
+    if (req.contrasenaNueva === req.contrasenaActual) {
+      return throwError(() => ({
+        status: 400,
+        message: 'La nueva contraseña debe ser diferente a la actual',
+      })).pipe(delay(API_CONFIG.demoLatenciaMs));
+    }
+    const correo = this._sesion()?.usuario.correo;
+    if (!correo || !this.demo.cambiarContrasena(correo, req.contrasenaActual, req.contrasenaNueva)) {
+      return throwError(() => ({
+        status: 401,
+        message: 'La contraseña actual es incorrecta',
+      })).pipe(delay(API_CONFIG.demoLatenciaMs));
+    }
+    return of({ message: 'Contraseña actualizada correctamente' }).pipe(delay(API_CONFIG.demoLatenciaMs));
+  }
 
   logout(): void {
     this.demo.borrarSesion();

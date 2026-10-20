@@ -2,8 +2,13 @@
   @if (!cursoActual()) {
     <header class="gestion__head">
       <h2 class="gestion__title">Cursos activos</h2>
-      <p class="gestion__lead">Selecciona un curso para gestionar sus estudiantes y equipos.</p>
+      <p class="gestion__lead">Selecciona un curso para gestionar sus estudiantes.</p>
     </header>
+
+    <p class="gestion__hint">
+      Los equipos ahora son las empresas de cada simulación: se arman en
+      <a routerLink="/docente/empresas">Empresas</a>.
+    </p>
 
     <div class="card cursos-panel">
       @if (cursos().length === 0) {
@@ -57,7 +62,10 @@
           Volver a cursos
         </button>
         <h2 class="gestion__title">{{ cursoActual()?.nombre }}</h2>
-        <p class="gestion__lead">Gestiona los estudiantes y equipos de este curso.</p>
+        <p class="gestion__lead">
+          Gestiona los estudiantes de este curso. Los equipos se arman en
+          <a routerLink="/docente/empresas">Empresas</a>.
+        </p>
       </div>
     </header>
 
@@ -73,7 +81,34 @@
       } @else if (estudiantesCargados().length === 0) {
         <p class="gestion__hint">Aún no hay estudiantes en este curso.</p>
       } @else {
-        <div class="tabla-scroll">
+        <label class="buscador">
+          <span class="visually-hidden">Buscar estudiante</span>
+          <input
+            type="search"
+            [value]="filtro()"
+            placeholder="Buscar por nombre, correo o identificación"
+            (input)="filtro.set($any($event.target).value)"
+          />
+        </label>
+        @if (estudiantesFiltrados().length === 0) {
+          <p class="gestion__hint">Ningún estudiante coincide con "{{ filtro() }}".</p>
+        }
+
+        <!-- Móvil: tarjetas (🎨 docs/09 §3) -->
+        <ul class="estudiantes-movil solo-movil">
+          @for (e of estudiantesFiltrados(); track e.id) {
+            <li class="estudiante-card">
+              <span class="estudiante-card__avatar" aria-hidden="true">{{ inicial(e.nombre) }}</span>
+              <div class="estudiante-card__info">
+                <strong>{{ e.nombre }}</strong>
+                <span>{{ e.correo }}</span>
+                <small>ID {{ e.numeroIdentificacion }}@if (e.edad) { · {{ e.edad }} años }@if (e.genero) { · {{ e.genero }} }</small>
+              </div>
+            </li>
+          }
+        </ul>
+
+        <div class="tabla-scroll solo-escritorio">
           <table class="tabla">
             <thead>
               <tr>
@@ -85,7 +120,7 @@
               </tr>
             </thead>
             <tbody>
-              @for (e of estudiantesCargados(); track e.id) {
+              @for (e of estudiantesFiltrados(); track e.id) {
                 <tr>
                   <td>{{ e.nombre }}</td>
                   <td>{{ e.correo }}</td>
@@ -121,7 +156,10 @@
       </div>
     </section>
 
-    <section class="card panel-block uploader">
+    <!-- Móvil: la carga masiva es tarea de escritorio (🎨 docs/09 §1). -->
+    <app-solo-web class="solo-movil" accion="La carga masiva de estudiantes por Excel" />
+
+    <section class="card panel-block uploader solo-escritorio">
       <div>
         <h3>Cargar estudiantes desde Excel</h3>
         <p class="gestion__hint">Se requieren correo, nombre, identificación, edad y género.</p>
@@ -186,131 +224,5 @@
         <button type="button" class="btn btn--ghost" (click)="reiniciar()">Cancelar</button>
       </div>
     }
-
-    <section class="card equipos-panel">
-      <div class="section-heading">
-        <div>
-          <span class="section-kicker">Paso 3</span>
-          <h3>Armar equipos</h3>
-          <p class="gestion__hint">Crea los grupos y revisa la distribución de estudiantes.</p>
-        </div>
-        <div class="equipo-auto">
-          <label for="tamano-equipo">Integrantes por equipo</label>
-          <input
-            id="tamano-equipo"
-            type="number"
-            min="2"
-            max="10"
-            [value]="tamanoEquipo()"
-            (input)="tamanoEquipo.set(+$any($event.target).value)"
-          />
-          <button
-            type="button"
-            class="btn btn--primary"
-            [disabled]="estudiantesCargados().length === 0"
-            (click)="formarEquiposAutomaticamente()"
-          >
-            Formar automáticamente
-          </button>
-        </div>
-      </div>
-      <div class="equipo-crear">
-        <div class="equipo-crear__label">
-          <strong>Creación manual</strong
-          ><span>Selecciona los nombres y crea el equipo en un clic.</span>
-        </div>
-        <input
-          type="text"
-          [value]="nombreNuevoEquipo()"
-          placeholder="Nombre del equipo"
-          (input)="nombreNuevoEquipo.set($any($event.target).value)"
-          (keyup.enter)="crearEquipo()"
-        />
-        <button
-          type="button"
-          class="btn btn--secondary"
-          [disabled]="estudiantesSeleccionados().length === 0 || !nombreNuevoEquipo().trim()"
-          (click)="crearEquipo()"
-        >
-          Crear equipo
-        </button>
-      </div>
-      @if (mensajeEquipo(); as mensaje) {
-        <app-alerta tipo="exito" [mensaje]="mensaje" />
-      }
-      <div class="equipos-grid">
-        <div>
-          <div class="subsection-heading">
-            <div>
-              <h4>Selecciona estudiantes</h4>
-              <span class="subsection-hint"
-                >Haz clic en los nombres para agregarlos al nuevo equipo.</span
-              >
-            </div>
-            <span class="count-badge">{{ estudiantesSeleccionados().length }}</span>
-          </div>
-          @if (sinEquipo().length === 0) {
-            <p class="gestion__hint">Todos tienen equipo.</p>
-          } @else {
-            <ul class="lista-estudiantes">
-              @for (e of sinEquipo(); track e.id) {
-                <li [class.is-selected]="estudiantesSeleccionados().includes(e.id)">
-                  <button
-                    type="button"
-                    class="estudiante-selector"
-                    [class.is-selected]="estudiantesSeleccionados().includes(e.id)"
-                    (click)="alternarEstudiante(e.id)"
-                  >
-                    <span>{{ e.nombre }}</span
-                    ><span class="selector-state">{{
-                      estudiantesSeleccionados().includes(e.id) ? 'Seleccionado' : 'Agregar'
-                    }}</span>
-                  </button>
-                </li>
-              }
-            </ul>
-          }
-        </div>
-        <div class="equipos-lista">
-          <div class="subsection-heading">
-            <h4>Equipos formados</h4>
-            <span class="count-badge">{{ equipos().length }}</span>
-          </div>
-          @if (equipos().length === 0) {
-            <div class="empty-team">
-              <strong>Aún no hay equipos</strong
-              ><span>Usa la formación automática o crea el primer equipo manualmente.</span>
-            </div>
-          }
-          @for (equipo of equipos(); track equipo.id) {
-            <article class="equipo-card">
-              <div class="equipo-card__head">
-                <div>
-                  <h4>{{ equipo.nombre }}</h4>
-                  <span>{{ equipo.estudianteIds.length }} integrante(s)</span>
-                </div>
-                <button type="button" class="btn btn--ghost" (click)="eliminarEquipo(equipo.id)">
-                  Eliminar
-                </button>
-              </div>
-              @if (equipo.estudianteIds.length === 0) {
-                <p class="gestion__hint">Sin integrantes.</p>
-              } @else {
-                <ul class="lista-estudiantes">
-                  @for (id of equipo.estudianteIds; track id) {
-                    <li>
-                      <span>{{ nombrePor(id) }}</span
-                      ><button type="button" class="btn btn--ghost" (click)="quitar(equipo.id, id)">
-                        Quitar
-                      </button>
-                    </li>
-                  }
-                </ul>
-              }
-            </article>
-          }
-        </div>
-      </div>
-    </section>
   }
 </section>

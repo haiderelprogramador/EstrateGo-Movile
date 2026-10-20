@@ -47,6 +47,20 @@ export class ReportesFinancieros {
     { concepto: 'Utilidad operativa', monto: '$199.800', total: true },
   ];
 
+  /**
+   * Móvil (🎨 docs/09 §5): cada bloque se puede plegar como acordeón para que
+   * la pantalla no sea un scroll infinito. En escritorio siempre están abiertos.
+   */
+  readonly seccionesAbiertas = signal<Record<string, boolean>>({ grafico: true, estado: true });
+
+  abierta(id: string): boolean {
+    return this.seccionesAbiertas()[id] ?? true;
+  }
+
+  alternar(id: string): void {
+    this.seccionesAbiertas.update((s) => ({ ...s, [id]: !this.abierta(id) }));
+  }
+
   /** Altura en % para las barras del mini-gráfico. */
   altura(valor: number): number {
     return Math.round((valor / this.maxSerie()) * 100);
